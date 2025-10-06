@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi Hacking Portal</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333; /* Added default text color */
+        }
+        .header {
+            display: flex;
+            justify-content: space-between; /* Pushes logos to the ends */
+            align-items: center; /* Vertically aligns items to the center */
+            padding: 15px 30px;
+            background-color: #001f3f; /* A classic navy blue */
+            color: white;
+            border-bottom: 4px solid #d4af37; /* Gold accent line */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Added subtle shadow */
+        }
+        .header .logo {
+            height: 80px; /* Adjust height as needed */
+            width: auto;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        /* New container for main content */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px 40px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        /* New styles for the top status containers */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .status-box {
+            background-color: #e9f5ff; /* A light blue background */
+            border: 1px solid #b3d7ff;
+            border-left: 5px solid #007bff; /* Blue accent on the left */
+            padding: 15px 20px;
+            border-radius: 5px;
+        }
+        .status-box h3 {
+            margin-top: 0;
+            color: #004085; /* Darker blue for the heading */
+        }
+        .status-box ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .status-box li {
+            padding: 4px 0;
+            font-size: 0.95em;
+        }
+        .status-box li strong {
+            display: inline-block;
+            width: 120px; /* Align the labels */
+        }
+        /* Table Styles */
+        .wifi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .wifi-table th, .wifi-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+            vertical-align: middle; /* Align content vertically */
+        }
+        .wifi-table th {
+            background-color: #002a53; /* Darker blue for header */
+            color: white;
+        }
+        .wifi-table tr:nth-child(even) {
+            background-color: #e9ecef;
+        }
+        .wifi-table tr:hover {
+            background-color: #d4e6f1;
+        }
+        .connect-btn {
+            padding: 8px 12px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease; /* Smooth transition */
+        }
+        .connect-btn:hover {
+            background-color: #218838;
+        }
+        .refresh-btn {
+            display: inline-flex; /* For aligning text and spinner */
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: none;
+            background-color: #007bff; /* A standard blue */
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease; /* Smooth transition */
+        }
+        .refresh-btn:hover {
+            background-color: #0056b3;
+        }
+        .refresh-btn:disabled {
+            background-color: #5a9bd5;
+            cursor: not-allowed;
+        }
+
+        /* Signal Strength Bar */
+        .signal-bar-container {
+            width: 100px;
+            height: 12px;
+            background-color: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .signal-bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+            /* background-color is set inline by JS */
+        }
+
+        /* Spinner for refresh button */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid #fff;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Action buttons in current connection */
+        .current-connection-actions {
+            margin-top: 15px;
+        }
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-right: 8px;
+            font-size: 0.9em;
+        }
+        .disconnect-btn {
+            background-color: #ffc107; /* Yellow/Amber */
+            color: #212529; /* Dark text for readability */
+        }
+        .disconnect-btn:hover { background-color: #e0a800; }
+        .forget-btn { background-color: #dc3545; /* Red */ }
+        .forget-btn:hover { background-color: #c82333; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <!-- Ministry of Defence Logo on the left -->
+        <img src="https://nexus3.pt/wp-content/uploads/2022/05/nexus30-logo.png" alt="Ministry of Defence Logo" class="logo">
+
+        <h1>Net Nexus</h1>
+
+        <!-- Navy Defence Logo on the right -->
+        <img src="https://www.citypng.com/public/uploads/preview/hd-wifi-wi-fi-hotspot-wireless-green-logo-sign-png-701751694707609ogkwf3sldi.png?v=2025071900" alt="Navy Defence Logo" class="logo">
+    </header>
+
+    <main class="container">
+        <!-- New Status Grid -->
+        <div class="status-grid">
+            <div class="status-box" id="wifi-status-box">
+                <h3>Connected Wi-Fi Device</h3>
+                <div id="current-wifi-details">
+                    <p>Scanning for active connection...</p>
+                </div>
+                <div class="current-connection-actions">
+                    <!-- Buttons will be added here by JS -->
+                </div>
+            </div>
+            <div class="status-box" id="bluetooth-status-box">
+                <h3>Connected Bluetooth Device</h3>
+                <div id="current-bluetooth-details">
+                    <p>No device connected. Pair with a device from the list below.</p>
+                    <!-- Example of a connected device -->
+                    <!-- <ul>
+                        <li><strong>Name:</strong> My Headphones</li>
+                        <li><strong>Address:</strong> AA:BB:CC:11:22:33</li>
+                    </ul> -->
+                </div>
+            </div>
+        </div>
+
+        <h2>Nearby Wi-Fi Networks</h2>
+        <p>The table below shows a list of available networks. The list refreshes automatically.</p>
+        
+        <button class="refresh-btn" onclick="refreshNetworks()">
+            <span class="spinner"></span>
+            <span>Refresh Networks</span>
+        </button>
+
+        <table class="wifi-table">
+            <thead>
+                <tr>
+                    <th>SSID (Network Name)</th>
+                    <th>Signal Strength</th>
+                    <th>Network Type</th>
+                    <th>Authentication</th>
+                    <th>Encryption</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="wifi-list">
+                <!-- Network data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+
+        <h2 style="margin-top: 40px;">Nearby Bluetooth Devices</h2>
+        <p>The table below shows discoverable Bluetooth devices. The list refreshes automatically.</p>
+        
+        <button id="refresh-bluetooth-btn" class="refresh-btn" onclick="refreshBluetoothDevices()">
+            <span class="spinner"></span>
+            <span>Refresh Bluetooth Devices</span>
+        </button>
+
+        <table class="wifi-table">
+            <thead>
+                <tr>
+                    <th>Device Name</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr> 
+            </thead>
+            <tbody id="bluetooth-list">
+                <!-- Bluetooth device data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+
+        <h2 style="margin-top: 40px;">Previously Connected Bluetooth Devices</h2>
+        <p>Click "Connect" to reconnect to a previously saved device.</p>
+ 
+        <table class="wifi-table">
+            <thead>
+                <tr>
+                    <th>Device Name</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="previous-bluetooth-list">
+                <!-- Previously connected devices will be inserted here -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        let isScanning = false; // A flag to prevent overlapping scans
+        let isScanningBluetooth = false;
+
+        async function fetchCurrentConnections() {
+            const wifiDetailsContainer = document.getElementById('current-wifi-details');
+            const wifiActionsContainer = document.querySelector('#wifi-status-box .current-connection-actions');
+
+            try {
+                const response = await fetch('/api/current-connection');
+                if (!response.ok) {
+                    throw new Error('Server responded with an error.');
+                }
+                const connections = await response.json();
+
+                if (connections && connections.length > 0) {
+                    const conn = connections[0];
+                    wifiDetailsContainer.innerHTML = `
+                        <ul>
+                            <li><strong>SSID:</strong> ${conn.ssid}</li>
+                            <li><strong>BSSID:</strong> ${conn.bssid}</li>
+                            <li><strong>Signal:</strong> ${conn.quality}%</li>
+                            <li><strong>Channel:</strong> ${conn.channel}</li>
+                            <li><strong>Security:</strong> ${conn.security}</li>
+                        </ul>
+                    `;
+                    // Add action buttons
+                    wifiActionsContainer.innerHTML = `
+                        <button class="action-btn disconnect-btn" onclick="disconnectFromCurrentNetwork()">Disconnect</button>
+                        <button class="action-btn forget-btn" onclick="forgetCurrentNetwork('${conn.ssid}')">Forget Network</button>
+                    `;
+                } else {
+                    wifiDetailsContainer.innerHTML = '<p>Not connected to any Wi-Fi network.</p>';
+                    wifiActionsContainer.innerHTML = ''; // Clear buttons
+                }
+            } catch (error) {
+                console.error('Error fetching current Wi-Fi connection:', error);
+                wifiDetailsContainer.innerHTML = '<p style="color: red;">Could not retrieve connection status.</p>';
+                wifiActionsContainer.innerHTML = '';
+            }
+        }
+
+        async function disconnectFromCurrentNetwork() {
+            if (!confirm('Are you sure you want to disconnect from the current network?')) return;
+            try {
+                const response = await fetch('/api/disconnect', { method: 'POST' });
+                const result = await response.json();
+                alert(result.message || result.error);
+                setTimeout(fetchCurrentConnections, 2000); // Refresh status
+            } catch (error) {
+                alert('An error occurred while trying to disconnect.');
+            }
+        }
+
+        async function forgetCurrentNetwork(ssid) {
+            if (!confirm(`Are you sure you want to forget the network "${ssid}"? This will remove its saved password.`)) return;
+            // This reuses the existing logic, but we need to create the function.
+            // Let's move the logic from the old file here.
+            // The previous implementation was inside the HTML, which I will now create as a standalone function.
+        }
+
+        async function refreshBluetoothDevices() {
+            if (isScanningBluetooth) {
+                console.log("Bluetooth scan already in progress. Skipping.");
+                return;
+            }
+            isScanningBluetooth = true;
+
+            const tableBody = document.getElementById('bluetooth-list');
+            const refreshButton = document.getElementById('refresh-bluetooth-btn');
+            const spinner = refreshButton.querySelector('.spinner');
+
+            // Show loading state
+            spinner.style.display = 'inline-block';
+            refreshButton.disabled = true;
+            if (tableBody.rows.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Scanning for Bluetooth devices...</td></tr>';
+            }
+
+            try {
+                // This assumes a new API endpoint `/api/bluetooth-devices` exists
+                const response = await fetch('/api/bluetooth-devices');
+
+                if (!response.ok) {
+                    // Specifically handle the "scan in progress" error from the server
+                    if (response.status === 429) {
+                        tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Scanning in progress...</td></tr>';
+                        return; // Exit the function early
+                    }
+                    let errorDetails = 'The server failed to scan for Bluetooth devices.';
+                    try {
+                        const errorData = await response.json();
+                        errorDetails = errorData.details || errorData.error || errorDetails;
+                    } catch (e) { /* Ignore if not JSON */ }
+                    throw new Error(errorDetails);
+                }
+
+                const devices = await response.json();
+                tableBody.innerHTML = '';
+
+                if (devices.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No Bluetooth devices found. Make sure Bluetooth is enabled.</td></tr>';
+                } else {
+                    devices.forEach(device => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${device.name ? device.name : '<em>Unknown Device</em>'}</td>
+                            <td>${device.address}</td>
+                            <td>
+                                <button class="connect-btn" onclick="connectToBluetoothDevice('${device.address}')">Connect</button>
+                                <button class="action-btn forget-btn" style="margin-left: 5px;" onclick="saveBluetoothDevice('${device.name || 'Unknown Device'}', '${device.address}')">Save</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching Bluetooth devices:', error);
+                tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: red;"><strong>Error scanning for devices.</strong><br><small style="white-space: pre-wrap;">${error.message}</small></td></tr>`;
+            } finally {
+                spinner.style.display = 'none';
+                refreshButton.disabled = false;
+                isScanningBluetooth = false;
+            }
+        }
+
+        async function saveBluetoothDevice(name, address) {
+            try {
+                const response = await fetch('/api/bluetooth-save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, address })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    fetchPreviousBluetoothDevices(); // Refresh the saved list
+                } else {
+                    alert(`Failed to save: ${result.error}`);
+                }
+            } catch (error) {
+                alert('An error occurred while trying to save the device.');
+            }
+        }
+
+        async function fetchPreviousBluetoothDevices() {
+            const tableBody = document.getElementById('previous-bluetooth-list');
+            try {
+                const response = await fetch('/api/bluetooth-previous-devices');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch previous devices.');
+                }
+                const devices = await response.json();
+                tableBody.innerHTML = '';
+
+                if (devices.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No saved devices found.</td></tr>';
+                } else {
+                    devices.forEach(device => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${device.name ? device.name : '<em>Unknown Device</em>'}</td>
+                            <td>${device.address}</td>
+                            <td><button class="connect-btn" onclick="connectToBluetoothDevice('${device.address}')">Connect</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching previous Bluetooth devices:', error);
+                tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: red;">${error.message}</td></tr>`;
+            }
+        }
+
+        async function refreshNetworks() {
+            if (isScanning) {
+                console.log("Scan already in progress. Skipping.");
+                return;
+            }
+            isScanning = true;
+
+            const tableBody = document.getElementById('wifi-list');
+            const refreshButton = document.querySelector('.refresh-btn');
+            const spinner = refreshButton.querySelector('.spinner');
+
+            // Show loading state
+            spinner.style.display = 'inline-block';
+            refreshButton.disabled = true;
+            // Only show loading in table if it's empty
+            if (tableBody.rows.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Scanning for networks...</td></tr>';
+            }
+
+            try {
+                const scanResponse = await fetch('/api/wifi');
+                const currentConnections = await fetch('/api/current-connection').then(res => res.ok ? res.json() : []);
+                const currentBssid = (currentConnections.length > 0) ? currentConnections[0].bssid : null;
+
+                // Handle scan response
+                if (!scanResponse.ok) {
+                    // Handle HTTP errors from the server (like 500)
+                    let errorDetails = 'The server failed to execute the scan command.';
+                    try {
+                        const errorData = await scanResponse.json();
+                        // Use the detailed message from the server if available
+                        errorDetails = errorData.details || errorData.error || errorDetails;
+                    } catch (e) {
+                        // Ignore if the response body is not JSON
+                    }
+                    throw new Error(errorDetails);
+                }
+
+                const allNetworks = await scanResponse.json();
+
+                // Filter out the currently connected network using its BSSID
+                const networks = currentBssid 
+                    ? allNetworks.filter(net => net.bssid !== currentBssid) 
+                    : allNetworks;
+
+                // Clear the table
+                tableBody.innerHTML = '';
+
+                if (networks.length === 0) {
+                    // Updated message to be more accurate if filtering happened
+                    const message = currentBssid 
+                        ? 'No other Wi-Fi networks found.'
+                        : 'No Wi-Fi networks found. Please ensure your wireless adapter is enabled.';
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${message}</td></tr>`;
+                } else {
+                    // Sort networks by signal strength (strongest first)
+                    networks.sort((a, b) => {
+                        const strengthA = parseInt(a.strength) || 0;
+                        const strengthB = parseInt(b.strength) || 0;
+                        return strengthB - strengthA;
+                    });
+
+                    // Populate the table with new data
+                    networks.forEach(net => {
+                        let strengthPercent = parseInt(net.strength);
+
+                        if (isNaN(strengthPercent)) {
+                            strengthPercent = 0;
+                        }
+
+                        // If the value is negative, assume it's dBm and convert to a percentage (0-100)
+                        // This is a common approximation.
+                        if (strengthPercent < 0) {
+                            if (strengthPercent <= -100) {
+                                strengthPercent = 0;
+                            } else if (strengthPercent >= -50) {
+                                strengthPercent = 100;
+                            } else {
+                                strengthPercent = 2 * (strengthPercent + 100);
+                            }
+                        }
+                        
+                        // Ensure the final percentage is within the 0-100 range
+                        strengthPercent = Math.max(0, Math.min(100, Math.round(strengthPercent)));
+
+                        let signalColor;
+                        if (strengthPercent > 70) {
+                            signalColor = '#28a745'; // Strong (green)
+                        } else if (strengthPercent > 40) {
+                            signalColor = '#ffc107'; // Medium (yellow)
+                        } else {
+                            signalColor = '#dc3545'; // Weak (red)
+                        }
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${net.ssid || '<em>Hidden Network</em>'}</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="signal-bar-container">
+                                        <div class="signal-bar" style="width: ${strengthPercent}%; background-color: ${signalColor};"></div>
+                                    </div>
+                                    <span>${strengthPercent}%</span>
+                                </div>
+                            </td>
+                            <td>${net.networkType}</td>
+                            <td>${net.authentication}</td>
+                            <td>${net.encryption}</td>
+                            <td><button class="connect-btn" onclick="connectToNetwork('${net.ssid || ''}')">Connect</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                // This catches network errors or errors thrown from the !response.ok block
+                console.error('Error fetching Wi-Fi networks:', error);
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: red;"><strong>Error scanning for networks.</strong><br><small style="white-space: pre-wrap;">${error.message}</small></td></tr>`;
+            } finally {
+                // Hide loading state
+                spinner.style.display = 'none';
+                refreshButton.disabled = false;
+                isScanning = false;
+            }
+        }
+
+        // Run scans when the page first loads
+        window.onload = () => {
+            fetchCurrentConnections(); // Fetch connected status first
+            refreshNetworks(); // Initial nearby Wi-Fi scan
+            setInterval(refreshNetworks, 15000); // Refresh Wi-Fi every 15 seconds
+
+            fetchPreviousBluetoothDevices(); // Fetch saved devices on load
+            refreshBluetoothDevices(); // Initial Bluetooth scan
+            setInterval(refreshBluetoothDevices, 25000); // Refresh Bluetooth every 25 seconds
+        };
+
+        async function connectToBluetoothDevice(address) {
+            try {
+                const response = await fetch('/api/bluetooth-connect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message);
+                    // Update the "Connected Device" box
+                    const deviceRow = Array.from(document.querySelectorAll('#bluetooth-list tr, #previous-bluetooth-list tr')).find(row => row.cells[1] && row.cells[1].innerText.toUpperCase() === address.toUpperCase());
+                    const deviceName = deviceRow ? deviceRow.cells[0].innerText : 'Unknown Device';
+                    const bluetoothDetailsContainer = document.getElementById('current-bluetooth-details');
+                    bluetoothDetailsContainer.innerHTML = `
+                        <ul>
+                            <li><strong>Name:</strong> ${deviceName}</li>
+                            <li><strong>Address:</strong> ${address.toUpperCase()}</li>
+                        </ul>`;
+                    // No longer auto-refreshing saved list on connect
+                } else {
+                    alert(`Pairing failed: ${result.error || 'An unknown error occurred.'}`);
+                }
+            } catch (error) {
+                console.error('Error connecting to Bluetooth device:', error);
+                alert('An error occurred while trying to pair. See the console for details.');
+            }
+        }
+
+        async function connectToNetwork(ssid) {
+             if (!ssid) {
+                 alert('Cannot connect to a hidden network without an SSID.');
+                 return;
+             }
+ 
+             // First, try to connect using a saved password (or if it's an open network)
+             try {
+                 const initialResponse = await fetch('/api/connect', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ ssid }), // Send only SSID first
+                 });
+ 
+                 if (initialResponse.ok) {
+                     const result = await initialResponse.json();
+                     alert(result.message || `Successfully connected to ${ssid}.`);
+                     setTimeout(fetchCurrentConnections, 3000); // Refresh connection status
+                     return; // Success, we're done
+                 }
+ 
+                 // If the server says a password is required (e.g., 401 Unauthorized)
+                 if (initialResponse.status === 401) {
+                     const password = prompt(`Password required for "${ssid}":`);
+ 
+                     if (password === null) { // User cancelled the prompt
+                         console.log('Connection attempt cancelled by user.');
+                         return;
+                     }
+ 
+                     // Second attempt, this time with the password
+                     const passwordResponse = await fetch('/api/connect', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify({ ssid, password }),
+                     });
+ 
+                     const result = await passwordResponse.json();
+ 
+                     if (passwordResponse.ok) {
+                         alert(result.message || `Successfully connected to ${ssid}.`);
+                         setTimeout(fetchCurrentConnections, 3000); // Refresh connection status
+                     } else {
+                         alert(`Connection failed: ${result.error || 'Incorrect password or unknown error'}`);
+                     }
+                 } else {
+                     // Handle other initial errors (e.g., 500 server error)
+                     const result = await initialResponse.json();
+                     alert(`Connection failed: ${result.error || 'An unknown error occurred on the first attempt.'}`);
+                 }
+             } catch (error) {
+                 console.error('Error connecting to Wi-Fi:', error);
+                 alert('An error occurred while trying to connect. See the console for details.');
+             }
+        }
+    </script>
+</body>
+</html>
