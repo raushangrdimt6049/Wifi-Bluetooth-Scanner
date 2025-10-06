@@ -222,21 +222,23 @@
             <span>Refresh Networks</span>
         </button>
 
-        <table class="wifi-table">
-            <thead>
-                <tr>
-                    <th>SSID (Network Name)</th>
-                    <th>Signal Strength</th>
-                    <th>Network Type</th>
-                    <th>Authentication</th>
-                    <th>Encryption</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="wifi-list">
-                <!-- Network data will be inserted here by JavaScript -->
-            </tbody>
-        </table>
+        <div class="table-responsive-wrapper">
+            <table class="wifi-table">
+                <thead>
+                    <tr>
+                        <th>SSID (Network Name)</th>
+                        <th>Signal Strength</th>
+                        <th>Network Type</th>
+                        <th>Authentication</th>
+                        <th>Encryption</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="wifi-list">
+                    <!-- Network data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
 
         <h2 style="margin-top: 40px;">Nearby Bluetooth Devices</h2>
         <p>The table below shows discoverable Bluetooth devices. The list refreshes automatically.</p>
@@ -245,35 +247,39 @@
             <span class="spinner"></span>
             <span>Refresh Bluetooth Devices</span>
         </button>
-
-        <table class="wifi-table">
-            <thead>
-                <tr>
-                    <th>Device Name</th>
-                    <th>Address</th>
-                    <th>Actions</th>
-                </tr> 
-            </thead>
-            <tbody id="bluetooth-list">
-                <!-- Bluetooth device data will be inserted here by JavaScript -->
-            </tbody>
-        </table>
+        
+        <div class="table-responsive-wrapper">
+            <table class="wifi-table">
+                <thead>
+                    <tr>
+                        <th>Device Name</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr> 
+                </thead>
+                <tbody id="bluetooth-list">
+                    <!-- Bluetooth device data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
 
         <h2 style="margin-top: 40px;">Previously Connected Bluetooth Devices</h2>
         <p>Click "Connect" to reconnect to a previously saved device.</p>
  
-        <table class="wifi-table">
-            <thead>
-                <tr>
-                    <th>Device Name</th>
-                    <th>Address</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="previous-bluetooth-list">
-                <!-- Previously connected devices will be inserted here -->
-            </tbody>
-        </table>
+        <div class="table-responsive-wrapper">
+            <table class="wifi-table">
+                <thead>
+                    <tr>
+                        <th>Device Name</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="previous-bluetooth-list">
+                    <!-- Previously connected devices will be inserted here -->
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <script>
